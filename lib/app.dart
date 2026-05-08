@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'providers/theme_provider.dart';
 import 'theme/app_theme.dart';
-import 'pages/home_shell.dart';
+import 'pages/start_page.dart';
 
 class PteromyiniApp extends StatelessWidget {
   const PteromyiniApp({super.key});
@@ -16,7 +16,7 @@ class PteromyiniApp extends StatelessWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: themeProvider.themeMode,
-      home: const HomeShell(),
+      home: const StartPage(),
     );
   }
 }

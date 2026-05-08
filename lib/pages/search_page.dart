@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/song.dart';
 import '../providers/player_provider.dart';
+import 'search_detail_page.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -56,6 +57,21 @@ class _SearchPageState extends State<SearchPage> {
     });
   }
 
+  void _submitSearch(String query) {
+    if (query.isEmpty) return;
+    setState(() {
+      if (!_searchHistory.contains(query)) {
+        _searchHistory.insert(0, query);
+      }
+    });
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => SearchDetailPage(query: query),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -81,7 +97,7 @@ class _SearchPageState extends State<SearchPage> {
                     child: TextField(
                       controller: _searchController,
                       onChanged: _performSearch,
-                      onSubmitted: _performSearch,
+                      onSubmitted: _submitSearch,
                       decoration: InputDecoration(
                         hintText: '搜索歌曲、歌手、专辑',
                         hintStyle: TextStyle(
@@ -217,7 +233,7 @@ class _SearchPageState extends State<SearchPage> {
                   return GestureDetector(
                     onTap: () {
                       _searchController.text = q;
-                      _performSearch(q);
+                      _submitSearch(q);
                     },
                     child: Container(
                       padding: const EdgeInsets.symmetric(
@@ -261,7 +277,7 @@ class _SearchPageState extends State<SearchPage> {
                 return GestureDetector(
                   onTap: () {
                     _searchController.text = q;
-                    _performSearch(q);
+                    _submitSearch(q);
                   },
                   child: Container(
                     padding:
@@ -326,7 +342,14 @@ class _SearchPageState extends State<SearchPage> {
   Widget _buildSourceChip(String label, Color color, ThemeData theme) {
     return Expanded(
       child: GestureDetector(
-        onTap: () {},
+        onTap: () {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('已选择 $label 音乐源'),
+              duration: const Duration(seconds: 1),
+            ),
+          );
+        },
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 14),
           decoration: BoxDecoration(

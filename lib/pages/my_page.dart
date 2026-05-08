@@ -3,7 +3,16 @@ import 'package:provider/provider.dart';
 import '../providers/theme_provider.dart';
 import '../providers/player_provider.dart';
 import '../models/song.dart';
+import 'settings_page.dart';
+import 'download_page.dart';
+import 'history_page.dart';
+import 'favorites_page.dart';
+import 'cloud_sync_page.dart';
+import 'music_report_page.dart';
+import 'local_file_page.dart';
+import 'login_page.dart';
 import 'playlist_detail_page.dart';
+import 'playlist_manage_page.dart';
 
 class MyPage extends StatelessWidget {
   const MyPage({super.key});
@@ -30,7 +39,11 @@ class MyPage extends StatelessWidget {
               ),
               IconButton(
                 icon: const Icon(Icons.settings_outlined),
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const SettingsPage()),
+                  );
+                },
               ),
             ],
           ),
@@ -53,7 +66,12 @@ class MyPage extends StatelessWidget {
                           TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                   IconButton(
                     icon: const Icon(Icons.add_circle_outline, size: 22),
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                            builder: (_) => const PlaylistManagePage()),
+                      );
+                    },
                   ),
                 ],
               ),
@@ -145,58 +163,65 @@ class MyPage extends StatelessWidget {
 
   Widget _buildUserCard(BuildContext context) {
     final theme = Theme.of(context);
-    return Container(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            theme.colorScheme.primary.withOpacity(0.8),
-            theme.colorScheme.tertiary.withOpacity(0.6),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => const LoginPage()),
+        );
+      },
+      child: Container(
+        margin: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              theme.colorScheme.primary.withOpacity(0.8),
+              theme.colorScheme.tertiary.withOpacity(0.6),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(16),
         ),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        children: [
-          const CircleAvatar(
-            radius: 30,
-            backgroundColor: Colors.white24,
-            child: Icon(Icons.person, color: Colors.white, size: 30),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  '音乐爱好者',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'LV.8 | 听歌 1,234 首',
-                  style:
-                      TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 13),
-                ),
-              ],
+        child: Row(
+          children: [
+            const CircleAvatar(
+              radius: 30,
+              backgroundColor: Colors.white24,
+              child: Icon(Icons.person, color: Colors.white, size: 30),
             ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(16),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    '音乐爱好者',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'LV.8 | 听歌 1,234 首',
+                    style:
+                        TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 13),
+                  ),
+                ],
+              ),
             ),
-            child: const Text('会员',
-                style: TextStyle(color: Colors.white, fontSize: 12)),
-          ),
-        ],
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: const Text('会员',
+                  style: TextStyle(color: Colors.white, fontSize: 12)),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -211,35 +236,121 @@ class MyPage extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Row(
-        children: items.map((item) {
-          return Expanded(
-            child: GestureDetector(
-              onTap: () {},
-              child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 4),
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? Colors.white.withOpacity(0.08)
-                      : Colors.black.withOpacity(0.04),
-                  borderRadius: BorderRadius.circular(12),
+      child: Column(
+        children: [
+          Row(
+            children: items.map((item) {
+              return Expanded(
+                child: GestureDetector(
+                  onTap: () {
+                    switch (item.$2) {
+                      case '本地下载':
+                        Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const DownloadPage()),
+                        );
+                        break;
+                      case '最近播放':
+                        Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const HistoryPage()),
+                        );
+                        break;
+                      case '我喜欢':
+                        Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const FavoritesPage()),
+                        );
+                        break;
+                      case '云同步':
+                        Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const CloudSyncPage()),
+                        );
+                        break;
+                    }
+                  },
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 4),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white.withOpacity(0.08)
+                          : Colors.black.withOpacity(0.04),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Column(
+                      children: [
+                        Icon(item.$1, size: 22, color: Theme.of(context).colorScheme.primary),
+                        const SizedBox(height: 6),
+                        Text(item.$2, style: const TextStyle(fontSize: 12)),
+                        const SizedBox(height: 2),
+                        Text(item.$3,
+                            style: TextStyle(
+                                fontSize: 10, color: Colors.grey.shade500)),
+                      ],
+                    ),
+                  ),
                 ),
-                child: Column(
-                  children: [
-                    Icon(item.$1, size: 22, color: Theme.of(context).colorScheme.primary),
-                    const SizedBox(height: 6),
-                    Text(item.$2, style: const TextStyle(fontSize: 12)),
-                    const SizedBox(height: 2),
-                    Text(item.$3,
-                        style: TextStyle(
-                            fontSize: 10, color: Colors.grey.shade500)),
-                  ],
+              );
+            }).toList(),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const LocalFilePage()),
+                    );
+                  },
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 4),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white.withOpacity(0.08)
+                          : Colors.black.withOpacity(0.04),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Column(
+                      children: [
+                        Icon(Icons.audio_file, size: 22, color: Theme.of(context).colorScheme.primary),
+                        const SizedBox(height: 6),
+                        const Text('本地音乐', style: TextStyle(fontSize: 12)),
+                      ],
+                    ),
+                  ),
                 ),
               ),
-            ),
-          );
-        }).toList(),
+              Expanded(
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const MusicReportPage()),
+                    );
+                  },
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 4),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white.withOpacity(0.08)
+                          : Colors.black.withOpacity(0.04),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Column(
+                      children: [
+                        Icon(Icons.bar_chart, size: 22, color: Theme.of(context).colorScheme.primary),
+                        const SizedBox(height: 6),
+                        const Text('听歌报告', style: TextStyle(fontSize: 12)),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              const Expanded(child: SizedBox()),
+              const Expanded(child: SizedBox()),
+            ],
+          ),
+        ],
       ),
     );
   }

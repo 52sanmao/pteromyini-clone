@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/player_provider.dart';
 import 'discover_page.dart';
-import 'search_page.dart';
+import 'discover_tab2_page.dart';
 import 'my_page.dart';
 import 'player_page.dart';
 import '../widgets/mini_player.dart';
@@ -19,7 +19,7 @@ class _HomeShellState extends State<HomeShell> {
 
   final _pages = const [
     DiscoverPage(),
-    SearchPage(),
+    DiscoverTab2Page(),
     MyPage(),
   ];
 
@@ -80,13 +80,13 @@ class _HomeShellState extends State<HomeShell> {
             label: '发现',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.search_outlined),
-            activeIcon: Icon(Icons.search),
-            label: '搜索',
+            icon: Icon(Icons.queue_music_outlined),
+            activeIcon: Icon(Icons.queue_music),
+            label: '歌单',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            activeIcon: Icon(Icons.person),
+            icon: Icon(Icons.settings_outlined),
+            activeIcon: Icon(Icons.settings),
             label: '我的',
           ),
         ],

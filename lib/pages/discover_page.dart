@@ -3,6 +3,12 @@ import 'package:provider/provider.dart';
 import '../models/song.dart';
 import '../providers/player_provider.dart';
 import 'playlist_detail_page.dart';
+import 'search_page.dart';
+import 'recommend_page.dart';
+import 'ranking_page.dart';
+import 'discover_tab2_page.dart';
+import 'artist_page.dart';
+import 'feedback_page.dart';
 
 class DiscoverPage extends StatelessWidget {
   const DiscoverPage({super.key});
@@ -29,8 +35,20 @@ class DiscoverPage extends StatelessWidget {
             ),
             actions: [
               IconButton(
+                icon: const Icon(Icons.search),
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const SearchPage()),
+                  );
+                },
+              ),
+              IconButton(
                 icon: const Icon(Icons.notifications_none),
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const FeedbackPage()),
+                  );
+                },
               ),
             ],
           ),
@@ -55,7 +73,13 @@ class DiscoverPage extends StatelessWidget {
 
           // Hot songs
           SliverToBoxAdapter(
-            child: _buildSectionHeader(context, '热门歌曲', '播放全部'),
+            child: _buildSectionHeader(context, '热门歌曲', '播放全部',
+                onAction: () {
+              if (PlayerProvider.demoSongs.isNotEmpty) {
+                player.play(PlayerProvider.demoSongs.first,
+                    playlist: PlayerProvider.demoSongs, index: 0);
+              }
+            }),
           ),
           SliverList(
             delegate: SliverChildBuilderDelegate(
@@ -85,74 +109,85 @@ class DiscoverPage extends StatelessWidget {
 
   Widget _buildBanner(BuildContext context) {
     final theme = Theme.of(context);
-    return Container(
-      margin: const EdgeInsets.all(16),
-      height: 160,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        gradient: LinearGradient(
-          colors: [
-            theme.colorScheme.primary,
-            theme.colorScheme.primary.withOpacity(0.6),
-            theme.colorScheme.tertiary,
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-      ),
-      child: Stack(
-        children: [
-          Positioned(
-            right: -20,
-            bottom: -20,
-            child: Icon(
-              Icons.play_circle_fill,
-              size: 120,
-              color: Colors.white.withOpacity(0.1),
-            ),
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => const RecommendPage()),
+        );
+      },
+      child: Container(
+        margin: const EdgeInsets.all(16),
+        height: 160,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          gradient: LinearGradient(
+            colors: [
+              theme.colorScheme.primary,
+              theme.colorScheme.primary.withOpacity(0.6),
+              theme.colorScheme.tertiary,
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  '每日推荐',
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.9),
-                    fontSize: 14,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                const Text(
-                  '根据你的口味生成\n每日更新30首',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    height: 1.3,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                ElevatedButton.icon(
-                  onPressed: () {},
-                  icon: const Icon(Icons.play_arrow, size: 18),
-                  label: const Text('立即播放'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: theme.colorScheme.primary,
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
+        ),
+        child: Stack(
+          children: [
+            Positioned(
+              right: -20,
+              bottom: -20,
+              child: Icon(
+                Icons.play_circle_fill,
+                size: 120,
+                color: Colors.white.withOpacity(0.1),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    '每日推荐',
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.9),
+                      fontSize: 14,
                     ),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 8),
+                  const Text(
+                    '根据你的口味生成\n每日更新30首',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      height: 1.3,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const RecommendPage()),
+                      );
+                    },
+                    icon: const Icon(Icons.play_arrow, size: 18),
+                    label: const Text('立即播放'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: theme.colorScheme.primary,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -165,13 +200,25 @@ class DiscoverPage extends StatelessWidget {
       (_QuickItem(Icons.mic, '歌手', Colors.purple)),
     ];
 
+    final destinations = <Widget Function()>[
+      () => const RecommendPage(),
+      () => const RankingPage(),
+      () => const DiscoverTab2Page(),
+      () => const ArtistPage(),
+    ];
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: items.map((item) {
+        children: List.generate(items.length, (i) {
+          final item = items[i];
           return GestureDetector(
-            onTap: () {},
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => destinations[i]()),
+              );
+            },
             child: Column(
               children: [
                 Container(
@@ -191,13 +238,14 @@ class DiscoverPage extends StatelessWidget {
               ],
             ),
           );
-        }).toList(),
+        }),
       ),
     );
   }
 
   Widget _buildSectionHeader(
-      BuildContext context, String title, String action) {
+      BuildContext context, String title, String action,
+      {VoidCallback? onAction}) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 12),
       child: Row(
@@ -207,7 +255,7 @@ class DiscoverPage extends StatelessWidget {
               style:
                   const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           GestureDetector(
-            onTap: () {},
+            onTap: onAction ?? () {},
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(

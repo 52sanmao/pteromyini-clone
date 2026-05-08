@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/player_provider.dart';
+import 'comment_page.dart';
+import 'sleep_timer_page.dart';
+import 'equalizer_page.dart';
+import 'download_page.dart';
+import 'player_list_page.dart';
+import 'lyric_style_page.dart';
+import 'lyric_view_page.dart';
 
 class PlayerPage extends StatefulWidget {
   const PlayerPage({super.key});
@@ -13,6 +20,7 @@ class _PlayerPageState extends State<PlayerPage>
     with SingleTickerProviderStateMixin {
   late AnimationController _rotationController;
   bool _showLyrics = false;
+  bool _isFavorite = false;
 
   @override
   void initState() {
@@ -131,6 +139,12 @@ class _PlayerPageState extends State<PlayerPage>
             ),
           ),
           IconButton(
+            icon: const Icon(Icons.format_paint),
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const LyricStylePage()),
+            ),
+          ),
+          IconButton(
             icon: const Icon(Icons.more_vert),
             onPressed: () {},
           ),
@@ -232,28 +246,44 @@ class _PlayerPageState extends State<PlayerPage>
       '你埋葬的爱情 是我的回忆',
     ];
 
-    return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 40),
-      itemCount: lyrics.length,
-      itemBuilder: (context, index) {
-        final isHighlight = index == 3; // simulate active line
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: Text(
-            lyrics[index],
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: isHighlight ? 18 : 15,
-              fontWeight:
-                  isHighlight ? FontWeight.bold : FontWeight.normal,
-              color: isHighlight
-                  ? Theme.of(context).colorScheme.primary
-                  : Colors.grey.withOpacity(0.6),
-              height: 1.5,
-            ),
+    return Column(
+      children: [
+        Expanded(
+          child: ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 40),
+            itemCount: lyrics.length,
+            itemBuilder: (context, index) {
+              final isHighlight = index == 3; // simulate active line
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Text(
+                  lyrics[index],
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: isHighlight ? 18 : 15,
+                    fontWeight:
+                        isHighlight ? FontWeight.bold : FontWeight.normal,
+                    color: isHighlight
+                        ? Theme.of(context).colorScheme.primary
+                        : Colors.grey.withOpacity(0.6),
+                    height: 1.5,
+                  ),
+                ),
+              );
+            },
           ),
-        );
-      },
+        ),
+        TextButton(
+          onPressed: () => Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => const LyricViewPage()),
+          ),
+          child: Text(
+            '查看完整歌词',
+            style: TextStyle(color: Theme.of(context).colorScheme.primary),
+          ),
+        ),
+        const SizedBox(height: 8),
+      ],
     );
   }
 
@@ -285,8 +315,16 @@ class _PlayerPageState extends State<PlayerPage>
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.favorite_border),
-            onPressed: () {},
+            icon: Icon(_isFavorite ? Icons.favorite : Icons.favorite_border),
+            onPressed: () {
+              setState(() => _isFavorite = !_isFavorite);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(_isFavorite ? '已添加到我喜欢的音乐' : '已取消喜欢'),
+                  duration: const Duration(seconds: 1),
+                ),
+              );
+            },
           ),
         ],
       ),
@@ -390,7 +428,9 @@ class _PlayerPageState extends State<PlayerPage>
           ),
           IconButton(
             icon: const Icon(Icons.queue_music, size: 24),
-            onPressed: () => _showPlayQueue(context, player),
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const PlayerListPage()),
+            ),
           ),
         ],
       ),
@@ -398,6 +438,8 @@ class _PlayerPageState extends State<PlayerPage>
   }
 
   Widget _buildBottomActions(BuildContext context) {
+    final player = context.read<PlayerProvider>();
+    final songTitle = player.currentSong?.title ?? '';
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 48),
       child: Row(
@@ -405,23 +447,39 @@ class _PlayerPageState extends State<PlayerPage>
         children: [
           IconButton(
             icon: const Icon(Icons.comment_outlined, size: 20),
-            onPressed: () {},
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => CommentPage(),
+                settings: RouteSettings(arguments: songTitle),
+              ),
+            ),
           ),
           IconButton(
             icon: const Icon(Icons.timer_outlined, size: 20),
-            onPressed: () {},
+            onPressed: () => showModalBottomSheet(
+              context: context,
+              builder: (_) => const SleepTimerPage(),
+            ),
           ),
           IconButton(
             icon: const Icon(Icons.equalizer, size: 20),
-            onPressed: () {},
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const EqualizerPage()),
+            ),
           ),
           IconButton(
             icon: const Icon(Icons.share_outlined, size: 20),
-            onPressed: () {},
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('分享功能开发中...')),
+              );
+            },
           ),
           IconButton(
             icon: const Icon(Icons.download_outlined, size: 20),
-            onPressed: () {},
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const DownloadPage()),
+            ),
           ),
         ],
       ),
